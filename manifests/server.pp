@@ -118,6 +118,7 @@ define redis::server (
   $repl_ping_slave_period  = 10,
   $save                    = [],
   $force_rewrite           = false,
+  $provider                = 'init.d',
 ) {
 
   $redis_install_dir = $::redis::install::redis_install_dir
@@ -175,6 +176,7 @@ define redis::server (
 
   if $init_script_template_path =~ /systemd/ {
     $init_script = "/etc/systemd/system/redis-server_${redis_name}.service"
+    $provider = 'systemd'
     # startup systemd script
     file { "/etc/systemd/system/redis-server_${redis_name}.service":
       ensure  => file,
@@ -230,6 +232,7 @@ define redis::server (
   service { "redis-server_${redis_name}":
     ensure     => $running,
     enable     => $enabled,
+    provider   => $provider,
     hasstatus  => true,
     hasrestart => true,
     require    => File[$init_script]
