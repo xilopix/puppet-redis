@@ -15,19 +15,23 @@
 #   The dir to which the newly built redis binaries are copied. Default value is '/usr/bin'.
 #
 class redis::install (
-  $redis_version     = $::redis::params::redis_version,
-  $redis_build_dir   = $::redis::params::redis_build_dir,
-  $redis_install_dir = $::redis::params::redis_install_dir,
-  $redis_package     = $::redis::params::redis_install_package,
-  $download_tool     = $::redis::params::download_tool
+  $redis_version         = $::redis::params::redis_version,
+  $redis_release_version = $::redis::params::redis_release_version,
+  $redis_build_dir       = $::redis::params::redis_build_dir,
+  $redis_install_dir     = $::redis::params::redis_install_dir,
+  $redis_package         = $::redis::params::redis_install_package,
+  $download_tool         = $::redis::params::download_tool
 ) inherits redis {
   if ( $redis_package == true ) {
     case $::operatingsystem {
-      'Debian', 'Ubuntu': {
-        package { 'redis-server' : ensure => $redis_version, }
+      'Debian': {
+        package { 'redis-server' : ensure => installed, install_options => [ { '--target-release' => $redis_release_version } ] }
+      }
+      'Ubuntu': {
+        package { 'redis-server' : ensure => $redis_release_version }
       }
       'Fedora', 'RedHat', 'CentOS', 'OEL', 'OracleLinux', 'Amazon', 'Scientific', 'SLES': {
-        package { 'redis' : ensure => $redis_version, }
+        package { 'redis' : ensure => $redis_version }
         # The SLES DatabaseServer repository installs a conflicting logrotation configuration
         if $::operatingsystem == 'SLES' {
           file { '/etc/logrotate.d/redis':

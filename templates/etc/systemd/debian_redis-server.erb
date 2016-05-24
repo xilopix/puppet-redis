@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=forking
-ExecStart=<%= @redis_install_dir %>/redis-server /etc/redis_<%= @redis_name %>.conf
+ExecStart=<%= @redis_install_dir %>/redis-server /etc/redis/redis_<%= @redis_name %>.conf
 ExecStop=/usr/bin/redis-cli shutdown
 Restart=always
 User=redis
