@@ -149,16 +149,12 @@ define redis::server (
 
   $redis_2_6_or_greater = versioncmp($::redis::install::redis_version,'2.6') >= 0
 
-  file { '/etc/redis':
-    ensure => directory,
-    require => Class['redis::install'],
-  } ->
-
   # redis conf file
   file { "/etc/redis/redis_${redis_name}.conf":
       ensure  => file,
       content => template('redis/etc/redis.conf.erb'),
       replace => $force_rewrite,
+      require => [File['/etc/redis']],
   }
 
   # path for persistent data
@@ -178,28 +174,29 @@ define redis::server (
   }
 
   if $init_script_template_path =~ /systemd/ {
-    $init_script = "/etc/systemd/system/redis-server_${redis_name}.service"
-    $provider = 'systemd'
+    $init_script = "/lib/systemd/system/redis-server_${redis_name}.service"
+    $init_provider = 'systemd'
     # startup systemd script
-    file { "/lib/systemd/system/redis-server_${redis_name}.service":
+    file { "${init_script}":
       ensure  => file,
       mode    => '0655',
       content => template($init_script_template_path),
       require => [
-        File["/etc/redis_${redis_name}.conf"],
+        File["/etc/redis/redis_${redis_name}.conf"],
         File["${redis_dir}/redis_${redis_name}"]
       ],
       notify => [Exec["systemd-enable_${redis_name}"],Service["redis-server_${redis_name}"]],
     }
   } else {
     $init_script = "/etc/init.d/redis-server_${redis_name}"
+    $init_provider = $provider
     # startup sysvinit script
     file { "/etc/init.d/redis-server_${redis_name}":
       ensure  => file,
       mode    => '0755',
       content => template($init_script_template_path),
       require => [
-        File["/etc/redis_${redis_name}.conf"],
+        File["/etc/redis/redis_${redis_name}.conf"],
         File["${redis_dir}/redis_${redis_name}"]
       ],
       notify  => Service["redis-server_${redis_name}"],
@@ -216,7 +213,7 @@ define redis::server (
     content => template('redis/redis_logrotate.conf.erb'),
     require => [
       Package['logrotate'],
-      File["/etc/redis_${redis_name}.conf"],
+      File["/etc/redis/redis_${redis_name}.conf"],
     ]
   }
 
@@ -235,7 +232,7 @@ define redis::server (
   service { "redis-server_${redis_name}":
     ensure     => $running,
     enable     => $enabled,
-    provider   => $provider,
+    provider   => $init_provider,
     hasstatus  => true,
     hasrestart => true,
     require    => File[$init_script]
