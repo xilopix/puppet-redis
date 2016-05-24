@@ -149,13 +149,16 @@ define redis::server (
 
   $redis_2_6_or_greater = versioncmp($::redis::install::redis_version,'2.6') >= 0
 
+  file { '/etc/redis':
+    ensure => directory,
+    require => Class['redis::install'],
+  } ->
+
   # redis conf file
-  file {
-    "/etc/redis_${redis_name}.conf":
+  file { "/etc/redis/redis_${redis_name}.conf":
       ensure  => file,
       content => template('redis/etc/redis.conf.erb'),
       replace => $force_rewrite,
-      require => Class['redis::install'];
   }
 
   # path for persistent data
@@ -178,7 +181,7 @@ define redis::server (
     $init_script = "/etc/systemd/system/redis-server_${redis_name}.service"
     $provider = 'systemd'
     # startup systemd script
-    file { "/etc/systemd/system/redis-server_${redis_name}.service":
+    file { "/lib/systemd/system/redis-server_${redis_name}.service":
       ensure  => file,
       mode    => '0655',
       content => template($init_script_template_path),
