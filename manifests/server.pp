@@ -95,6 +95,7 @@ define redis::server (
   $redis_nr_dbs            = 1,
   $redis_dbfilename        = 'dump.rdb',
   $redis_dir               = '/var/lib',
+  $redis_conf_dir          = '/etc',
   $redis_log_dir           = '/var/log',
   $redis_pid_dir           = '/var/run',
   $redis_loglevel          = 'notice',
@@ -149,14 +150,6 @@ define redis::server (
 
   $redis_2_6_or_greater = versioncmp($::redis::install::redis_version,'2.6') >= 0
 
-  # redis conf file
-  file { "/etc/redis/redis_${redis_name}.conf":
-      ensure  => file,
-      content => template('redis/etc/redis.conf.erb'),
-      replace => $force_rewrite,
-      require => [File['/etc/redis']],
-  }
-
   # path for persistent data
   # If we specify a directory that's not default we need to pass it as hash
   # and ensure that we do not have duplicate warning, when we have multiple
@@ -167,6 +160,24 @@ define redis::server (
       require => Class['redis::install'],
     }
   }
+
+  # redis conf path
+  if ! defined(File[$redis_conf_dir]) {
+    file { $redis_conf_dir:
+      ensure  => directory,
+      require => Class['redis::install'],
+    }
+  }
+
+  # redis conf file
+  file { "${$redis_conf_dir}/redis_${redis_name}.conf":
+      ensure  => file,
+      content => template('redis/etc/redis.conf.erb'),
+      replace => $force_rewrite,
+      require => [File[$redis_conf_dir]],
+  }
+
+
 
   file { "${redis_dir}/redis_${redis_name}":
     ensure  => directory,
