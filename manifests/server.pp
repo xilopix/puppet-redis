@@ -177,11 +177,13 @@ define redis::server (
       require => [File[$redis_conf_dir]],
   }
 
-
-
   file { "${redis_dir}/redis_${redis_name}":
     ensure  => directory,
+    owner   => 'redis',
+    group   => 'redis',
+    before  => Service["redis-server_${redis_name}"],
     require => Class['redis::install'],
+    recurse => true,
   }
 
   if $init_script_template_path =~ /systemd/ {
