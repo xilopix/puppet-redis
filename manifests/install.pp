@@ -25,7 +25,12 @@ class redis::install (
   if ( $redis_package == true ) {
     case $::operatingsystem {
       'Debian': {
-        package { 'redis-server' : ensure => installed, install_options => [ { '--target-release' => $redis_release_version } ] }
+        package { ['redis-server', 'redis-tools']:
+          ensure => installed,
+          install_options => [
+            { '--target-release' => $redis_release_version }
+          ]
+        }
       }
       'Ubuntu': {
         package { 'redis-server' : ensure => $redis_release_version }

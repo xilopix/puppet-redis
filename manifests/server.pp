@@ -250,4 +250,8 @@ define redis::server (
     hasrestart => true,
     require    => File[$init_script]
   }
+
+  if ! defined(Class['Redis::Configure']) {
+    include redis::configure
+  }
 }
