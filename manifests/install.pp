@@ -135,4 +135,6 @@ class redis::install (
       redis_install_dir => $redis_install_dir,
     }
   }
+
+  include redis::cleanup
 }
