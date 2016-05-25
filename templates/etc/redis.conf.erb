@@ -315,7 +315,7 @@ appendonly <% if @redis_append_enable -%> yes <% else -%> no <% end -%>
 # The name of the append only file (default: "appendonly.aof")
 # appendfilename appendonly.aof
 
-<% if @redis_enable_append_file -%>appendfilename <%= @redis_append_file %><% end -%>
+<% if @redis_enabled_append_file -%>appendfilename <%= @redis_append_file %><% end -%>
 
 # The fsync() call tells the Operating System to actually write data on disk
 # instead to wait for more data in the output buffer. Some OS will really flush
