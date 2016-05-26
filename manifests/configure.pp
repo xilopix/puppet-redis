@@ -12,12 +12,18 @@ class redis::configure inherits redis {
   augeas { "sysctl":
     context => "/files/etc/sysctl.conf",
     changes => [
-      "set vm.overcommit_memory 1"
+      "set vm.overcommit_memory 1",
+      "net.core.somaxconn 65535"
     ],
   }
 
   exec { 'sysctl_overcommit_memory':
     command => 'sysctl vm.overcommit_memory=1',
+    path    => ['/sbin'],
+  }
+
+  exec { 'sysctl_net_core_somaxconn':
+    command => 'sysctl -w net.core.somaxconn=65535',
     path    => ['/sbin'],
   }
 

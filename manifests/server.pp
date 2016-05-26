@@ -181,6 +181,7 @@ define redis::server (
     ensure  => directory,
     owner   => 'redis',
     group   => 'redis',
+    mode    => '0644',
     before  => Service["redis-server_${redis_name}"],
     require => Class['redis::install'],
     recurse => true,

@@ -9,6 +9,7 @@ ExecStop=/usr/bin/redis-cli -h <%= @redis_ip %> -p <%= @redis_port %> shutdown
 Restart=always
 User=redis
 Group=redis
+LimitNOFILE=65535
 
 [Install]
 WantedBy=multi-user.target
