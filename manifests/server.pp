@@ -226,7 +226,7 @@ define redis::server (
     content => template('redis/redis_logrotate.conf.erb'),
     require => [
       Package['logrotate'],
-      File["/etc/redis/redis_${redis_name}.conf"],
+      File["${redis_conf_dir}/redis_${redis_name}.conf"],
     ]
   }
 
