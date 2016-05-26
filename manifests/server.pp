@@ -170,7 +170,7 @@ define redis::server (
   }
 
   # redis conf file
-  file { "${$redis_conf_dir}/redis_${redis_name}.conf":
+  file { "${redis_conf_dir}/redis_${redis_name}.conf":
       ensure  => file,
       content => template('redis/etc/redis.conf.erb'),
       replace => $force_rewrite,
@@ -195,7 +195,7 @@ define redis::server (
       mode    => '0655',
       content => template($init_script_template_path),
       require => [
-        File["/etc/redis/redis_${redis_name}.conf"],
+        File["${redis_conf_dir}/redis_${redis_name}.conf"],
         File["${redis_dir}/redis_${redis_name}"]
       ],
       notify => [Exec["systemd-enable_${redis_name}"],Service["redis-server_${redis_name}"]],
@@ -209,7 +209,7 @@ define redis::server (
       mode    => '0755',
       content => template($init_script_template_path),
       require => [
-        File["/etc/redis/redis_${redis_name}.conf"],
+        File["${redis_conf_dir}/redis_${redis_name}.conf"],
         File["${redis_dir}/redis_${redis_name}"]
       ],
       notify  => Service["redis-server_${redis_name}"],
