@@ -13,10 +13,19 @@ class redis (
   ### END Hiera Lookups ###
 ) inherits redis::params {
 
-  file { '/etc/redis':
-    ensure => directory,
-  }
+  #
+  # handle redis installation
+  #
+  include redis::install
 
+  #
+  # remove redis base server
+  #
+  include redis::cleanup
+
+  #
+  # install specific servers
+  #
   create_resources('redis::server', $servers)
-
 }
+
