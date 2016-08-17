@@ -19,11 +19,6 @@ class redis (
   include redis::install
 
   #
-  # remove redis base server
-  #
-  include redis::cleanup
-
-  #
   # install specific servers
   #
   create_resources('redis::server', $servers)

@@ -95,7 +95,7 @@ define redis::server (
   $redis_nr_dbs            = 1,
   $redis_dbfilename        = 'dump.rdb',
   $redis_dir               = '/var/lib',
-  $redis_conf_dir          = '/etc',
+  $redis_conf_dir          = '/etc/redis',
   $redis_log_dir           = '/var/log',
   $redis_pid_dir           = '/var/run',
   $redis_loglevel          = 'notice',

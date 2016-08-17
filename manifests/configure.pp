@@ -13,7 +13,7 @@ class redis::configure inherits redis {
     context => "/files/etc/sysctl.conf",
     changes => [
       "set vm.overcommit_memory 1",
-      "net.core.somaxconn 65535"
+      "set net.core.somaxconn 65535"
     ],
   }
 

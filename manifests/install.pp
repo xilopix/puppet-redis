@@ -49,6 +49,11 @@ class redis::install (
         fail('The module does not support this OS.')
       }
     }
+
+    #
+    # remove redis base server
+    #
+    include redis::cleanup
   } else {
 
     # install necessary packages for build.
@@ -139,7 +144,12 @@ class redis::install (
       redis_build_dir   => $redis_build_dir,
       redis_install_dir => $redis_install_dir,
     }
-  }
 
-  include redis::cleanup
+    #
+    # remove redis base server
+    #
+    class { 'redis::cleanup':
+      require => [Anchor['redis::install']]
+    }
+  }
 }
